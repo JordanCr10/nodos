@@ -1,0 +1,239 @@
+#include <iostream>
+using namespace std;
+
+struct Nodo {
+    int dato;
+    Nodo *siguiente;
+    Nodo *anterior;
+};
+
+Nodo *crearNodo(int dato) {
+    Nodo *nuevoNodo = new Nodo;
+    nuevoNodo->dato = dato;
+    nuevoNodo->siguiente = nullptr;
+    nuevoNodo->anterior = nullptr;
+    return nuevoNodo;
+}
+
+void agregarNodo(Nodo **primero, Nodo **ultimo, int dato) {
+    Nodo *nuevoNodo = crearNodo(dato);
+
+    if (*primero == nullptr) {
+        *primero = nuevoNodo;
+        *ultimo = nuevoNodo;
+        nuevoNodo->siguiente = nuevoNodo;
+        nuevoNodo->anterior = nuevoNodo;
+    } else {
+        nuevoNodo->anterior = *ultimo;
+        nuevoNodo->siguiente = *primero;
+        (*ultimo)->siguiente = nuevoNodo;
+        (*primero)->anterior = nuevoNodo;
+        *ultimo = nuevoNodo;
+    }
+}
+
+void mostrarLista(Nodo *primero) {
+    if (primero == nullptr) {
+        cout << "La lista está vacía" << endl;
+        return;
+    }
+    Nodo *actual = primero;
+    do {
+        cout << actual->dato << " <-> ";
+        actual = actual->siguiente;
+    } while (actual != primero);
+    cout << endl;
+}
+
+void mostrarPosiciones(Nodo *primero, int dato) {
+    if (primero == nullptr) {
+        cout << "La lista está vacía." << endl;
+        return;
+    }
+    Nodo *actual = primero;
+    int posicion = 0;
+    bool encontrado = false;
+    do {
+        if (actual->dato == dato) {
+            cout << "Dato " << dato << " ubicado en la posición " << posicion << endl;
+            encontrado = true;
+        }
+        actual = actual->siguiente;
+        posicion++;
+    } while (actual != primero);
+
+    if (!encontrado) {
+        cout << "El dato " << dato << " no se encuentra en la lista." << endl;
+    }
+}
+
+void borrarNodo(Nodo **primero, Nodo **ultimo, int posicion) {
+    if (*primero == nullptr) {
+        cout << "La lista está vacía, no se puede borrar ningún nodo." << endl;
+        return;
+    }
+
+    Nodo *actual = *primero;
+    int indice = 0;
+
+
+    if (*primero == *ultimo && posicion == 0) {
+        delete actual;
+        *primero = nullptr;
+        *ultimo = nullptr;
+        cout << "El único nodo de la lista ha sido eliminado." << endl;
+        return;
+    }
+
+   
+    do {
+        if (indice == posicion) {
+            if (actual == *primero) {
+                
+                *primero = actual->siguiente;
+                (*ultimo)->siguiente = *primero;
+                (*primero)->anterior = *ultimo;
+            } else if (actual == *ultimo) {
+                
+                *ultimo = actual->anterior;
+                (*ultimo)->siguiente = *primero;
+                (*primero)->anterior = *ultimo;
+            } else {
+                
+                actual->anterior->siguiente = actual->siguiente;
+                actual->siguiente->anterior = actual->anterior;
+            }
+
+            delete actual;
+            cout << "Nodo en la posición " << posicion << " ha sido eliminado." << endl;
+            return;
+        }
+        actual = actual->siguiente;
+        indice++;
+    } while (actual != *primero);
+
+    cout << "Posición fuera de rango." << endl;
+}
+
+void borrarTodaLista(Nodo **primero, Nodo **ultimo) {
+    if (*primero == nullptr) {
+        cout << "La lista ya está vacía." << endl;
+        return;
+    }
+
+    Nodo *actual = *primero;
+    Nodo *siguienteNodo = nullptr;
+
+    do {
+        siguienteNodo = actual->siguiente;
+        delete actual;
+        actual = siguienteNodo;
+    } while (actual != *primero);
+
+    *primero = nullptr;
+    *ultimo = nullptr;
+
+    cout << "Todos los nodos han sido eliminados y la lista está vacía." << endl;
+}
+
+void recorrerLista(Nodo **actual, Nodo **primero, Nodo **ultimo) {
+    int opcionRecorrer, nuevoDato;
+    do {
+        cout << "\nNodo actual: " << (*actual)->dato << endl;
+        cout << "1. Modificar dato del nodo actual" << endl;
+        cout << "2. Avanzar al siguiente nodo" << endl;
+        cout << "3. Retroceder al nodo anterior" << endl;
+        cout << "4. Agregar un nuevo nodo" << endl;
+        cout << "5. Volver al menú principal" << endl;
+        cout << "Ingrese una opción: ";
+        cin >> opcionRecorrer;
+
+        switch (opcionRecorrer) {
+            case 1:
+                cout << "Ingrese el nuevo dato para el nodo actual: ";
+                cin >> nuevoDato;
+                (*actual)->dato = nuevoDato;
+                cout << "Dato del nodo actualizado a " << nuevoDato << endl;
+                break;
+            case 2:
+                *actual = (*actual)->siguiente;
+                break;
+            case 3:
+                *actual = (*actual)->anterior;
+                break;
+            case 4:
+                cout << "Ingrese el dato del nuevo nodo: ";
+                cin >> nuevoDato;
+                agregarNodo(primero, ultimo, nuevoDato);
+                cout << "Nuevo nodo agregado con dato " << nuevoDato << endl;
+                break;
+            case 5:
+                cout << "Volviendo al menú principal..." << endl;
+                break;
+            default:
+                cout << "Opción inválida" << endl;
+        }
+    } while (opcionRecorrer != 5);
+}
+
+int main() {
+    Nodo *primero = nullptr;
+    Nodo *ultimo = nullptr;
+    Nodo *actual = nullptr;
+    int opcion, dato, posicion;
+
+    do {
+        cout << "\nMenú principal:" << endl;
+        cout << "1. Agregar un nuevo nodo" << endl;
+        cout << "2. Recorrer la lista" << endl;
+        cout << "3. Mostrar lista" << endl;
+        cout << "4. Mostrar posiciones de un nodo" << endl;
+        cout << "5. Borrar nodo por posición" << endl;
+        cout << "6. Borrar toda la lista" << endl;
+        cout << "7. Salir" << endl;
+        cout << "Ingrese una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                cout << "Ingrese el dato a insertar: ";
+                cin >> dato;
+                agregarNodo(&primero, &ultimo, dato);
+                if (actual == nullptr) {
+                    actual = primero;
+                }
+                break;
+            case 2:
+                if (primero == nullptr) {
+                    cout << "Mi rey la lista está vacía" << endl;
+                } else {
+                    recorrerLista(&actual, &primero, &ultimo);
+                }
+                break;
+            case 3:
+                mostrarLista(primero);
+                break;
+            case 4:
+                cout << "Ingrese el dato a buscar: ";
+                cin >> dato;
+                mostrarPosiciones(primero, dato);
+                break;
+            case 5:
+                cout << "Ingrese la posición del nodo a borrar: ";
+                cin >> posicion;
+                borrarNodo(&primero, &ultimo, posicion);
+                break;
+            case 6:
+                borrarTodaLista(&primero, &ultimo);
+                actual = nullptr;  // Al borrar toda la lista, no puede haber nodo actual
+                break;
+            case 7:
+                cout << "Adios bro..." << endl;
+                break;
+            default:
+                cout << "Opción inválida" << endl;
+        }
+    } while (opcion != 7);
+
+    return 0;
+}
