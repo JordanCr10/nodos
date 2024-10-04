@@ -102,6 +102,21 @@ void mostrarPosicionesDeValor(Nodo *primero, int valor) {
     }
 }
 
+int obtenerTamanoLista(Nodo *primero) {
+    if (primero == nullptr) {
+        return 0;
+    }
+
+    Nodo *actual = primero;
+    int contador = 0;
+    do {
+        contador++;
+        actual = actual->siguiente;
+    } while (actual != primero);
+
+    return contador;
+}
+
 bool esNumero(const string &entrada) {
     for (char c : entrada) {
         if (!isdigit(c)) {
@@ -120,7 +135,7 @@ void borrarNodoPorSecuencia(Nodo **primero, Nodo **ultimo, int dato) {
     Nodo *actual = *primero;
     do {
         if (actual->dato == dato) {
-            if (actual == *primero && actual == *ultimo) { // Solo hay un nodo
+            if (actual == *primero && actual == *ultimo) {
                 delete actual;
                 *primero = nullptr;
                 *ultimo = nullptr;
@@ -255,10 +270,11 @@ int main() {
         cout << "1. Agregar un nuevo nodo al final" << endl;
         cout << "2. Recorrer la lista" << endl;
         cout << "3. Mostrar lista" << endl;
-        cout << "4. Mostrar posiciones de un valor" << endl; // Cambiado
-        cout << "5. Borrar un nodo por secuencia" << endl; // Nueva opción
-        cout << "6. Eliminar toda la lista" << endl; // Nueva opción
-        cout << "7. Salir" << endl;
+        cout << "4. Mostrar posiciones de un valor" << endl;
+        cout << "5. Borrar un nodo por secuencia" << endl;
+        cout << "6. Eliminar toda la lista" << endl;
+        cout << "7. Mostrar tamaño de la lista" << endl;
+        cout << "8. Salir" << endl;
         cout << "Ingrese una opción: ";
         cin >> opcion2;
 
@@ -288,31 +304,34 @@ int main() {
             case 3:
                 mostrarLista(primero);
                 break;
-            case 4: // Nueva opción para mostrar posiciones de un valor
+            case 4:
                 cout << "Ingrese el valor para buscar posiciones: ";
                 cin >> dato;
                 mostrarPosicionesDeValor(primero, dato);
                 break;
-            case 5: { // Opción para borrar un nodo
+            case 5: {
                 cout << "Ingrese el dato del nodo a eliminar: ";
                 cin >> dato;
                 borrarNodoPorSecuencia(&primero, &ultimo, dato);
                 if (actual != nullptr && actual->dato == dato) {
-                    actual = actual->siguiente; // Mover actual al siguiente nodo si se borró el actual
+                    actual = actual->siguiente; 
                 }
                 break;
             }
-            case 6: // Opción para eliminar toda la lista
+            case 6:
                 eliminarTodaLaLista(&primero, &ultimo);
                 actual = nullptr; // Resetear el nodo actual
                 break;
             case 7:
+                cout << "El tamaño de la lista es: " << obtenerTamanoLista(primero) << endl;
+                break;
+            case 8:
                 cout << "Adios..." << endl;
                 break;
             default:
                 cout << "Opción inválida" << endl;
         }
-    } while (opcion != 7);
+    } while (opcion != 8);
 
     return 0;
 }
