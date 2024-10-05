@@ -1,0 +1,159 @@
+#include <iostream>
+#include <stack>
+#include <queue>
+#include <string>
+
+using namespace std;
+
+
+void agregarCadena(const string& cadena, stack<char>& pila, queue<char>& cola) {
+    for (char letra : cadena) {
+        pila.push(letra);  
+        cola.push(letra); 
+    }
+}
+
+
+void mostrarPosiciones(const stack<char>& pila, const queue<char>& cola) {
+    cout << "Contenido de la pila (LIFO):" << endl;
+    stack<char> pilaTemp = pila; 
+    int i = 0;
+    while (!pilaTemp.empty()) {
+        cout << pilaTemp.top() << ": posición " << i << " (pila)" << endl;
+        pilaTemp.pop();
+        i++;
+    }
+
+    cout << "\nContenido de la cola (FIFO):" << endl;
+    queue<char> colaTemp = cola; 
+    i = 0;
+    while (!colaTemp.empty()) {
+        cout << colaTemp.front() << ": posición " << i << " (cola)" << endl;
+        colaTemp.pop();
+        i++;
+    }
+}
+
+
+void buscarEnPila(stack<char> pila, char letra) {
+    stack<char> pilaTemp = pila; 
+    int i = 0;
+    bool encontrado = false;
+    
+    cout << "Buscando letra '" << letra << "' en la pila..." << endl;
+    while (!pilaTemp.empty()) {
+        if (pilaTemp.top() == letra) {
+            cout << "Letra '" << letra << "' encontrada en posición " << i << " (pila)." << endl;
+            encontrado = true;
+        }
+        pilaTemp.pop();
+        i++;
+    }
+    if (!encontrado) {
+        cout << "Letra '" << letra << "' no encontrada en la pila." << endl;
+    }
+}
+
+
+void buscarEnCola(queue<char> cola, char letra) {
+    queue<char> colaTemp = cola; 
+    int i = 0;
+    bool encontrado = false;
+    
+    cout << "Buscando letra '" << letra << "' en la cola..." << endl;
+    while (!colaTemp.empty()) {
+        if (colaTemp.front() == letra) {
+            cout << "Letra '" << letra << "' encontrada en posición " << i << " (cola)." << endl;
+            encontrado = true;
+        }
+        colaTemp.pop();
+        i++;
+    }
+    if (!encontrado) {
+        cout << "Letra '" << letra << "' no encontrada en la cola." << endl;
+    }
+}
+
+
+string eliminarLetra(const string& cadena, char letra) {
+    string nuevaCadena;
+    for (char c : cadena) {
+        if (c != letra) {
+            nuevaCadena += c; 
+        }
+    }
+    return nuevaCadena;
+}
+
+int main() {
+    string cadena;
+    while (true) {
+        cout << "Introduce una Palabra: ";
+        getline(cin, cadena);  
+        
+        
+        if (cadena.find(' ') == string::npos) {
+            break;  
+        }
+        cout << "La cadena no debe contener espacios. Intenta de nuevo." << endl;
+    }
+
+    stack<char> pila;
+    queue<char> cola;
+
+    agregarCadena(cadena, pila, cola);
+
+    int opcion;
+    do {
+        cout << "\nMenú:\n";
+        cout << "1. Mostrar posiciones de letras\n";
+        cout << "2. Buscar letra en pila\n";
+        cout << "3. Buscar letra en cola\n";
+        cout << "4. Eliminar letra de la cadena\n";
+        cout << "0. Salir\n";
+        cout << "Elige una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                mostrarPosiciones(pila, cola);
+                break;
+            case 2: {
+                char letra;
+                cout << "Introduce la letra a buscar en la pila: ";
+                cin >> letra;
+                buscarEnPila(pila, letra);
+                break;
+            }
+            case 3: {
+                char letra;
+                cout << "Introduce la letra a buscar en la cola: ";
+                cin >> letra;
+                buscarEnCola(cola, letra);
+                break;
+            }
+            case 4: {
+                char letra;
+                cout << "Introduce la letra a eliminar de la cadena: ";
+                cin >> letra;
+                cadena = eliminarLetra(cadena, letra);
+                cout << "Cadena después de eliminar '" << letra << "': " << cadena << endl;
+
+            
+                stack<char> nuevaPila;
+                queue<char> nuevaCola;
+                agregarCadena(cadena, nuevaPila, nuevaCola);
+                pila = nuevaPila;
+                cola = nuevaCola;
+                break;
+            }
+            case 0:
+                cout << "Saliendo del programa." << endl;
+                break;
+            default:
+                cout << "Opción no válida. Intenta de nuevo." << endl;
+        }
+    } while (opcion != 0);
+
+    return 0;
+}
