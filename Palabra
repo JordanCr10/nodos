@@ -2,9 +2,8 @@
 #include <stack>
 #include <queue>
 #include <string>
-
+#include <limits>
 using namespace std;
-
 
 void agregarCadena(const string& cadena, stack<char>& pila, queue<char>& cola) {
     for (char letra : cadena) {
@@ -12,7 +11,6 @@ void agregarCadena(const string& cadena, stack<char>& pila, queue<char>& cola) {
         cola.push(letra); 
     }
 }
-
 
 void mostrarPosiciones(const stack<char>& pila, const queue<char>& cola) {
     cout << "Contenido de la pila (LIFO):" << endl;
@@ -34,7 +32,6 @@ void mostrarPosiciones(const stack<char>& pila, const queue<char>& cola) {
     }
 }
 
-
 void buscarEnPila(stack<char> pila, char letra) {
     stack<char> pilaTemp = pila; 
     int i = 0;
@@ -53,7 +50,6 @@ void buscarEnPila(stack<char> pila, char letra) {
         cout << "Letra '" << letra << "' no encontrada en la pila." << endl;
     }
 }
-
 
 void buscarEnCola(queue<char> cola, char letra) {
     queue<char> colaTemp = cola; 
@@ -74,7 +70,6 @@ void buscarEnCola(queue<char> cola, char letra) {
     }
 }
 
-
 string eliminarLetra(const string& cadena, char letra) {
     string nuevaCadena;
     for (char c : cadena) {
@@ -85,12 +80,15 @@ string eliminarLetra(const string& cadena, char letra) {
     return nuevaCadena;
 }
 
+bool validarUnaSolaLetra(const string& entrada) {
+    return entrada.length() == 1;
+}
+
 int main() {
     string cadena;
     while (true) {
         cout << "Introduce una Palabra: ";
         getline(cin, cadena);  
-        
         
         if (cadena.find(' ') == string::npos) {
             break;  
@@ -110,50 +108,73 @@ int main() {
         cout << "2. Buscar letra en pila\n";
         cout << "3. Buscar letra en cola\n";
         cout << "4. Eliminar letra de la cadena\n";
-        cout << "0. Salir\n";
+        cout << "5. Salir\n";
         cout << "Elige una opción: ";
         cin >> opcion;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Opción no válida. Debes ingresar un número entero." << endl;
+            continue;
+        }
 
         switch (opcion) {
             case 1:
                 mostrarPosiciones(pila, cola);
                 break;
             case 2: {
-                char letra;
-                cout << "Introduce la letra a buscar en la pila: ";
-                cin >> letra;
-                buscarEnPila(pila, letra);
+                string entrada;
+                cout << "Introduce una sola letra a buscar en la pila: ";
+                cin >> entrada;
+                if (validarUnaSolaLetra(entrada)) {
+                    buscarEnPila(pila, entrada[0]);
+                } else {
+                    cout << "Opción no válida. Solo puedes introducir una letra." << endl;
+                }
                 break;
             }
             case 3: {
-                char letra;
-                cout << "Introduce la letra a buscar en la cola: ";
-                cin >> letra;
-                buscarEnCola(cola, letra);
+                string entrada;
+                cout << "Introduce una sola letra a buscar en la cola: ";
+                cin >> entrada;
+                if (validarUnaSolaLetra(entrada)) {
+                    buscarEnCola(cola, entrada[0]);
+                } else {
+                    cout << "Opción no válida. Solo puedes introducir una letra." << endl;
+                }
                 break;
             }
             case 4: {
-                char letra;
-                cout << "Introduce la letra a eliminar de la cadena: ";
-                cin >> letra;
-                cadena = eliminarLetra(cadena, letra);
-                cout << "Cadena después de eliminar '" << letra << "': " << cadena << endl;
+                string entrada;
+                cout << "Introduce una sola letra a eliminar en la cadena: ";
+                cin >> entrada;
+                if (validarUnaSolaLetra(entrada)) {
+                    char letra = entrada[0];
+                    if (cadena.find(letra) != string::npos) {
+                        cadena = eliminarLetra(cadena, letra);
+                        cout << "Cadena después de eliminar '" << letra << "': " << cadena << endl;
 
-            
-                stack<char> nuevaPila;
-                queue<char> nuevaCola;
-                agregarCadena(cadena, nuevaPila, nuevaCola);
-                pila = nuevaPila;
-                cola = nuevaCola;
+                        stack<char> nuevaPila;
+                        queue<char> nuevaCola;
+                        agregarCadena(cadena, nuevaPila, nuevaCola);
+                        pila = nuevaPila;
+                        cola = nuevaCola;
+                    } else {
+                        cout << "La letra '" << letra << "' no está en la cadena." << endl;
+                    }
+                } else {
+                    cout << "Opción no válida. Solo puedes introducir una letra." << endl;
+                }
                 break;
             }
-            case 0:
+            case 5:
                 cout << "Saliendo del programa." << endl;
                 break;
             default:
                 cout << "Opción no válida. Intenta de nuevo." << endl;
         }
-    } while (opcion != 0);
+    } while (opcion != 5);
 
     return 0;
 }
