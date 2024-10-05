@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <limits>
 using namespace std;
 
 struct Nodo {
@@ -59,11 +60,17 @@ void agregarNodoAtras(Nodo **actual, Nodo **primero, Nodo **ultimo, int dato) {
 
 void agregarNodoEnPosicionActual(Nodo **actual, Nodo **primero, Nodo **ultimo, int dato) {
     Nodo *nuevoNodo = crearNodo(dato);
-    nuevoNodo->anterior = (*actual)->anterior;
     nuevoNodo->siguiente = *actual;
+    nuevoNodo->anterior = (*actual)->anterior;
+
     (*actual)->anterior->siguiente = nuevoNodo;
     (*actual)->anterior = nuevoNodo;
+
+    if (*actual == *primero) {
+        *primero = nuevoNodo;
+    }
 }
+
 
 void mostrarLista(Nodo *primero) {
     if (primero == nullptr) {
@@ -201,11 +208,19 @@ void recorrerLista(Nodo **actual, Nodo **primero, Nodo **ultimo) {
 
         switch (opcionRecorrer) {
             case 1:
-                cout << "Ingrese el nuevo dato para el nodo actual: ";
-                cin >> nuevoDato;
-                (*actual)->dato = nuevoDato;
-                cout << "Dato del nodo actualizado a " << nuevoDato << endl;
-                break;
+                int nuevoDat;
+                cout << "Ingrese el nuevo dato para el nodo actual (actual: " << (*actual)->dato << "): ";
+                cin >> nuevoDat;
+    
+               if (cin.fail()) {
+                    cout << "Dato no válido. Por favor ingrese un valor válido." << endl;
+                    cin.clear(); 
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                    continue;
+                }
+                (*actual)->dato = nuevoDat;
+                cout << "Nodo actual modificado a " << nuevoDato << endl;
+            break;
             case 2:
                 *actual = (*actual)->siguiente;
                 break;
@@ -218,7 +233,7 @@ void recorrerLista(Nodo **actual, Nodo **primero, Nodo **ultimo) {
                 cout << "¿Dónde desea agregar el nodo?" << endl;
                 cout << "1. Adelante" << endl;
                 cout << "2. Atrás" << endl;
-                cout << "3. En la misma posición (empujar actual hacia la derecha)" << endl;
+                cout << "3. En la misma posición" << endl;
                 cout << "Ingrese una opción: ";
                 cin >> opcionAgregarStr;
 
@@ -230,6 +245,13 @@ void recorrerLista(Nodo **actual, Nodo **primero, Nodo **ultimo) {
                 opcionAgregar = stoi(opcionAgregarStr);
                 cout << "Ingrese el dato del nuevo nodo: ";
                 cin >> nuevoDato;
+
+                if (cin.fail()) {
+                    cout << "Dato no válido. Por favor ingrese un valor válido." << endl;
+                    cin.clear(); 
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                    continue;
+                }
 
                 switch (opcionAgregar) {
                     case 1:
@@ -289,6 +311,14 @@ int main() {
             case 1:
                 cout << "Ingrese el dato a insertar al final: ";
                 cin >> dato;
+
+                if (cin.fail()) {
+                    cout << "Dato no válido. Por favor ingrese un valor válido." << endl;
+                    cin.clear(); 
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                    continue;
+                }
+
                 agregarNodoAlFinal(&primero, &ultimo, dato);
                 if (actual == nullptr) {
                     actual = primero;
@@ -307,11 +337,27 @@ int main() {
             case 4:
                 cout << "Ingrese el valor para buscar posiciones: ";
                 cin >> dato;
+
+                if (cin.fail()) {
+                    cout << "Dato no válido. Por favor ingrese un valor válido." << endl;
+                    cin.clear(); 
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    continue;
+                }
+
                 mostrarPosicionesDeValor(primero, dato);
                 break;
             case 5: {
                 cout << "Ingrese el dato del nodo a eliminar: ";
                 cin >> dato;
+
+                if (cin.fail()) {
+                    cout << "Dato no válido. Por favor ingrese un valor válido." << endl;
+                    cin.clear(); 
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    continue;
+                }
+
                 borrarNodoPorSecuencia(&primero, &ultimo, dato);
                 if (actual != nullptr && actual->dato == dato) {
                     actual = actual->siguiente; 
@@ -320,7 +366,7 @@ int main() {
             }
             case 6:
                 eliminarTodaLaLista(&primero, &ultimo);
-                actual = nullptr; // Resetear el nodo actual
+                actual = nullptr; 
                 break;
             case 7:
                 cout << "El tamaño de la lista es: " << obtenerTamanoLista(primero) << endl;
