@@ -1,0 +1,106 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+struct Nodo {
+    string valor;
+    Nodo* rama1;
+    Nodo* rama2;
+
+    Nodo() : valor(""), rama1(nullptr), rama2(nullptr) {}
+};
+
+class Arbol {
+private:
+    Nodo* raiz;
+    int niveles;
+
+    void insertar(Nodo* nodo, int nivelActual, vector<Nodo*>& camino) {
+        if (nivelActual == niveles) return;
+
+        int rama;
+        do {
+            cout << "Nivel " << nivelActual + 1 << ": Selecciona la rama (1 o 2) para ingresar un valor: ";
+            cin >> rama;
+
+            if (rama == 1) {
+                if (nodo->rama1 == nullptr) {
+                    nodo->rama1 = new Nodo();
+                } else if (!nodo->rama1->valor.empty()) {
+                    cout << "Esta rama ya está ocupada. " << endl;
+                    continue;
+                }
+                cout << "Ingresa un valor para la rama 1: ";
+                cin >> nodo->rama1->valor;
+                camino.push_back(nodo->rama1);
+                insertar(nodo->rama1, nivelActual + 1, camino);
+            } else if (rama == 2) {
+                if (nodo->rama2 == nullptr) {
+                    nodo->rama2 = new Nodo();
+                } else if (!nodo->rama2->valor.empty()) {
+                    cout << "Esta rama ya está ocupada. " << endl;
+                    continue;
+                }
+                cout << "Ingresa un valor para la rama 2: ";
+                cin >> nodo->rama2->valor;
+                camino.push_back(nodo->rama2);
+                insertar(nodo->rama2, nivelActual + 1, camino);
+            } else {
+                cout << "Opción inválida. Intenta de nuevo." << endl;
+            }
+        } while (rama != 1 && rama != 2);
+
+        char opcion;
+        cout << "¿Quieres volver al nodo anterior? (s/n): ";
+        cin >> opcion;
+        if (opcion == 's' || opcion == 'S') {
+            if (!camino.empty()) {
+                camino.pop_back(); // Retrocede un nivel
+                Nodo* nodoAnterior = camino.empty() ? raiz : camino.back();
+                insertar(nodoAnterior, nivelActual - 1, camino);
+            }
+        } else {
+            // Se queda en el mismo nivel, permitiendo al usuario seguir interactuando
+            insertar(nodo, nivelActual, camino);
+        }
+    }
+
+    void mostrar(Nodo* nodo, int nivelActual) {
+        if (nodo == nullptr) return;
+
+        cout << string(nivelActual * 2, ' ') << "Valor: " << (nodo->valor.empty() ? "Vacío" : nodo->valor) << endl;
+        mostrar(nodo->rama1, nivelActual + 1);
+        mostrar(nodo->rama2, nivelActual + 1);
+    }
+
+public:
+    Arbol(int n) : niveles(n) {
+        raiz = new Nodo();
+    }
+
+    void construir() {
+        vector<Nodo*> camino; // Para llevar el camino de nodos
+        camino.push_back(raiz);
+        insertar(raiz, 0, camino);
+    }
+
+    void mostrarArbol() {
+        mostrar(raiz, 0);
+    }
+};
+
+int main() {
+    int niveles;
+    cout << "Ingrese la cantidad de niveles del árbol: ";
+    cin >> niveles;
+
+    Arbol arbol(niveles);
+    arbol.construir();
+    cout << "Estructura del árbol:" << endl;
+    arbol.mostrarArbol();
+
+    return 0;
+}
+/*Haz un programa con la tematica de arboles que permita al usuario digitar la cantidad de niveles que va a tener el arbol y que en cada nivel pregunte en cual rama quiere digitar si en la rama 1 del primer nivel o la rama 2 del primer nivel y asi sucecivamente y que al completar el ultimo nivel le pregunte al usuario si quiere devolver al nodo anterior y ahi vuelva y pregunte si quiere digitar en la rama 1 de ese nivel o la rama 2 de ese nivel pero que digite solo en la rama que no tiene digito si digita en una rama y que inicie desde arriba hacia abajo y que ya digito muestre que esa rama esta ocupada y siga con el programa y al final de completar todo el arbol muestre todos los valores todo en c++*/
